@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Document System</title>
+</head>
+<body>
+    <h1>Smart Document Summarizer and Q&A System</h1>
+    
+    <section>
+        <h2>Upload Document for Summarization</h2>
+        <form id="upload-form">
+            <input type="file" id="document" name="document" accept=".pdf" required>
+            <button type="submit">Generate Summary</button>
+        </form>
+        <h3 id="summary-result"></h3>
+    </section>
+    
+    <section>
+        <h2>Ask Questions about the Document</h2>
+        <form id="qa-form">
+            <textarea id="context" placeholder="Paste document text here" required></textarea><br>
+            <input type="text" id="question" placeholder="Enter your question" required>
+            <button type="submit">Get Answer</button>
+        </form>
+        <h3 id="qa-result"></h3>
+    </section>
+
+    <script>
+        const uploadForm = document.getElementById('upload-form');
+        const qaForm = document.getElementById('qa-form');
+
+        // Handle document upload and summarization
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('document', document.getElementById('document').files[0]);
+
+            const response = await fetch('/summarize', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            document.getElementById('summary-result').innerText = "Summary: " + data.summary;
+        });
+
+        // Handle Q&A
+        qaForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const context = document.getElementById('context').value;
+            const question = document.getElementById('question').value;
+
+            const response = await fetch('/qa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ context, question })
+            });
+
+            const data = await response.json();
+            document.getElementById('qa-result').innerText = "Answer: " + data.answer;
+        });
+    </script>
+</body>
+</html>
