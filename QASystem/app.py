@@ -50,7 +50,9 @@ def question_answering():
     if "task" in question.lower():
         tasks = re.findall(r"(Task \d+: .*?)(?:\n|$)", context)
         if tasks:
-            return jsonify({"answer": ", ".join(tasks)})
+            # Format tasks as a bulleted list for better readability
+            formatted_tasks = "\n".join(f"- {task}" for task in tasks)
+            return jsonify({"answer": formatted_tasks})
 
     # Default Q&A pipeline
     answer = qa_pipeline(question=question, context=context)
